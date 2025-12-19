@@ -1,0 +1,317 @@
+[
+  {
+    "mssv": "2033230001",
+    "name": "Đoàn Hoài An",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2033230002",
+    "name": "Nguyễn Hoàng An",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230021",
+    "name": "Nguyễn Đức Anh",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230050",
+    "name": "Nguyễn Huy Gia Bảo",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230036",
+    "name": "Phan Võ Chí Bảo",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230173",
+    "name": "Hạ Trần Quang Đăng",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230144",
+    "name": "Bùi Quốc Đạt",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2033230060",
+    "name": "Trần Hữu Đạt",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230147",
+    "name": "Võ Nguyễn Thành Đạt",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230097",
+    "name": "Trương Quang Diệu",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230229",
+    "name": "Nguyễn Quốc Hiền",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2033230080",
+    "name": "Ngô Thế Hiển",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230284",
+    "name": "Nguyễn Cao Mạnh Hùng",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230302",
+    "name": "Lê Trương Huy",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230290",
+    "name": "Nguyễn Quang Huy",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230294",
+    "name": "Phạm Quốc Huy",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230312",
+    "name": "Phùng Tuấn Huy",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230385",
+    "name": "Hứa Vĩnh Khang",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230411",
+    "name": "Lê Đình Anh Khoa",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230416",
+    "name": "Nguyễn Đình Khôi",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230349",
+    "name": "Lưu Trí Kiệt",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230442",
+    "name": "Nguyễn Ngọc Yến Linh",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2033230171",
+    "name": "Dương Tuấn Lộc",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230457",
+    "name": "Huỳnh Bảo Long",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230453",
+    "name": "Lê Minh Long",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230480",
+    "name": "Phạm Minh Luân",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230486",
+    "name": "Phạm Nguyễn Minh Luân",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2033230177",
+    "name": "Trần Võ Anh Lực",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230495",
+    "name": "Phùng Thị Ly",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230509",
+    "name": "Nguyễn Trọng Mạnh",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230536",
+    "name": "Hồ Quốc Nam",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230538",
+    "name": "Nguyễn Hoài Nam",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230571",
+    "name": "Nguyễn Thị Ngọc",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230575",
+    "name": "Hoàng Trung Nguyên",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230589",
+    "name": "Nguyễn Trọng Nguyên",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230592",
+    "name": "Hồ Thị Thanh Nhã",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230600",
+    "name": "Nguyễn Trọng Nhân",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230611",
+    "name": "Lê Hoàng Minh Nhật",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230617",
+    "name": "Hồ Ngọc Phương Nhi",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230615",
+    "name": "Lê Thị Tuyết Nhi",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230618",
+    "name": "Nguyễn Thị Ý Nhi",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230630",
+    "name": "Nguyễn Quỳnh Như",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230664",
+    "name": "Nguyễn Hoài Phong",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230713",
+    "name": "Trương Trọng Quang",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2033230243",
+    "name": "Nguyễn Duy Quý",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230772",
+    "name": "Nguyễn Thành Tài",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230789",
+    "name": "Huỳnh Thanh Minh Tâm",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230783",
+    "name": "Nguyễn Thanh Tâm",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230785",
+    "name": "Phan Minh Tâm",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230888",
+    "name": "Nguyễn Hữu Thành",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230956",
+    "name": "Nguyễn Minh Thư",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230959",
+    "name": "Nguyễn Thị Minh Thư",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001230945",
+    "name": "Đào Minh Thuận",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230951",
+    "name": "Nguyễn Đẩu Thủy",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2033211322",
+    "name": "Tạ Nguyễn Nhật Tiến",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230985",
+    "name": "Cao Ngọc Khắc Triệu",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230840",
+    "name": "Đoàn Tuấn Tú",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230858",
+    "name": "Trần Lê Anh Tuấn",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001230870",
+    "name": "Nguyễn Xuân Tường",
+    "gender": "Nam"
+  },
+  {
+    "mssv": "2001231023",
+    "name": "Ngô Thị Thu Uyên",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001231035",
+    "name": "Trần Đặng Ngọc Viên",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001231067",
+    "name": "Bạch Ngọc Vy",
+    "gender": "Nữ"
+  },
+  {
+    "mssv": "2001231063",
+    "name": "Võ Thị Yến Vy",
+    "gender": "Nữ"
+  }
+]

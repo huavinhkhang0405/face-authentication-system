@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Student List - UniManage</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "primary-dark": "#0f4bc4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased overflow-hidden">
+    <div class="flex h-screen w-full">
+        {% include 'sidebar.html' %}
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-background-light dark:bg-background-dark">
+            <header
+                class="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark transition-colors duration-200">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold tracking-tight hidden sm:block">Danh sách Sinh viên</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex gap-2">
+                        <button
+                            class="flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors relative">
+                            <span class="material-symbols-outlined" style="font-size: 24px;">notifications</span>
+                            <span
+                                class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-surface-dark"></span>
+                        </button>
+                        <button
+                            class="flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors">
+                            <span class="material-symbols-outlined" style="font-size: 24px;">help</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-700">
+                        <div class="text-right hidden md:block">
+                            <p class="text-sm font-semibold leading-none">{{ user.name }}</p>
+                            <p class="text-xs text-text-secondary dark:text-slate-500 mt-1">{{ user.role }}</p>
+                        </div>
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-offset-2 ring-primary/20 dark:ring-offset-surface-dark"
+                            data-alt="Avatar of the user"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAbaW0Dr92y8ZIIufqAarUx6MHHLLBEkO9QiFLTB-2Kr4EHyi92glEfZUo3ykAYnbHd0OeVHR5SFrzWFD2aV1zCnQX2-UUIZk3uN89L6KJFq2X3HiSFtRfYIHqc0LDNZUa3bjsI_vlY75rFd8Urx5Gnj3UQb7Uihydt99NVa0ouNfmOrvrkQFWcC__h3QQnrCi6yZXmxRwbrMmsKDmE-wW2Wj6qAZSpZ-nwAOZpt2qZlAe01wNrh5PdD0CWG-QS5JCKYGZzIVJQ-f8I");'>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+                <div class="max-w-7xl mx-auto flex flex-col gap-6">
+
+                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div class="flex flex-col gap-2">
+                            <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                                14DHTH05 - Trí tuệ nhân tạo</h2>
+                            <p class="text-slate-500 dark:text-slate-400 text-base">Quản lý danh sách sinh viên và dữ
+                                liệu khuôn mặt cho điểm danh</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button
+                                class="flex items-center gap-2 h-10 px-4 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-[20px]">download</span>
+                                <span>Xuất CSV</span>
+                            </button>
+                            <a href="{{ url_for('add_student_page') }}"
+                                class="flex items-center gap-2 h-10 px-4 bg-primary hover:bg-primary-dark rounded-lg text-white text-sm font-bold shadow-md shadow-primary/20 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[20px]">add</span>
+                                <span>Thêm Sinh viên</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div
+                            class="flex flex-col gap-1 p-5 rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">groups</span>
+                                <p class="text-sm font-medium">Tổng Sinh viên</p>
+                            </div>
+                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ total }}</p>
+                            <div class="text-xs text-green-600 font-medium flex items-center gap-1 mt-1">
+                                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                <span>Sĩ số ổn định</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex flex-col gap-1 p-5 rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">wc</span>
+                                <p class="text-sm font-medium">Tỉ lệ Nam / Nữ</p>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ stats.male_count }}
+                                </p>
+                                <span class="text-slate-400 text-lg">/</span>
+                                <p class="text-3xl font-bold text-pink-600 dark:text-pink-400">{{ stats.female_count }}
+                                </p>
+                            </div>
+                            <div
+                                class="flex w-full h-1.5 rounded-full mt-2 overflow-hidden bg-slate-100 dark:bg-slate-700">
+                                {% set male_percent = (stats.male_count / total * 100) | round(1) if total > 0 else 0 %}
+                                {% set female_percent = (stats.female_count / total * 100) | round(1) if total > 0 else
+                                0 %}
+                                <div class="bg-blue-500 h-full" style="width: {{ male_percent }}%"></div>
+                                <div class="bg-pink-500 h-full" style="width: {{ female_percent }}%"></div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex flex-col gap-1 p-5 rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">face</span>
+                                <p class="text-sm font-medium">Dữ liệu khuôn mặt</p>
+                            </div>
+                            <div class="flex items-end justify-between">
+                                <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ stats.with_images
+                                    }}<span class="text-xl text-slate-400 font-normal">/{{ total }}</span></p>
+                                <span
+                                    class="text-sm font-bold {% if stats.completion_rate >= 80 %}text-green-600 bg-green-50 dark:bg-green-900/20{% elif stats.completion_rate >= 50 %}text-orange-600 bg-orange-50 dark:bg-orange-900/20{% else %}text-red-600 bg-red-50 dark:bg-red-900/20{% endif %} px-2 py-0.5 rounded">{{
+                                    stats.completion_rate }}%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full"
+                                    style="width: {{ stats.completion_rate }}%"></div>
+                            </div>
+                            <div
+                                class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2 flex items-center justify-between">
+                                <div class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                    <span>Đủ: {{ stats.has_sufficient }}</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                                    <span>Thiếu: {{ stats.has_insufficient }}</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                    <span>Chưa: {{ stats.has_none }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="flex flex-col md:flex-row gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm items-center">
+                        <div class="relative flex-1 w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-slate-400">search</span>
+                            </div>
+                            <input
+                                class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg leading-5 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition-shadow"
+                                placeholder="Tìm kiếm theo Tên hoặc MSSV..." type="text" />
+                        </div>
+                        <div class="flex gap-3 w-full md:w-auto">
+                            <div class="relative group">
+                                <select
+                                    class="appearance-none bg-slate-100 dark:bg-slate-800 border-none text-slate-700 dark:text-slate-200 py-2.5 pl-4 pr-10 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer min-w-[140px]">
+                                    <option>Tất cả ảnh</option>
+                                    <option>Đã có ảnh</option>
+                                    <option>Chưa có ảnh</option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                                    <span class="material-symbols-outlined text-[20px]">arrow_drop_down</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                                <thead
+                                    class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                                    <tr>
+                                        <th class="p-4 w-4"><input
+                                                class="w-4 h-4 text-primary bg-slate-100 border-slate-300 rounded focus:ring-primary"
+                                                type="checkbox" /></th>
+                                        <th class="p-4 font-semibold text-slate-900 dark:text-white">Thông tin sinh viên
+                                        </th>
+                                        <th class="p-4 font-semibold text-slate-900 dark:text-white">MSSV</th>
+                                        <th class="p-4 font-semibold text-slate-900 dark:text-white">Giới tính</th>
+                                        <th class="p-4 font-semibold text-slate-900 dark:text-white">Liên hệ</th>
+                                        <th class="p-4 font-semibold text-slate-900 dark:text-white">Dữ liệu khuôn mặt
+                                        </th>
+                                        <th class="p-4 font-semibold text-slate-900 dark:text-white text-right">Hành
+                                            động</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                                    {% if students %}
+                                    {% for student in students %}
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                                        <td class="p-4"><input
+                                                class="w-4 h-4 text-primary bg-slate-100 border-slate-300 rounded focus:ring-primary"
+                                                type="checkbox" /></td>
+                                        <td class="p-4">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-xs border border-slate-200 dark:border-slate-700">
+                                                    {{ student.name[:2].upper() }}
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <span class="font-medium text-slate-900 dark:text-white">{{
+                                                        student.name }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-4 font-mono text-xs">{{ student.mssv }}</td>
+                                        <td class="p-4">
+                                            <div class="flex flex-col text-xs">
+                                                <span>{{ student.mssv }}@huit.edu.vn</span>
+                                            </div>
+                                        </td>
+                                        <td class="p-4">{{ student.gender }}</td>
+                                        <td class="p-4">
+                                            {% if student.has_images %}
+                                            {% if student.is_sufficient %}
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                                    <span class="material-symbols-outlined text-[14px]">face</span>
+                                                    Đã có ({{ student.image_count }} ảnh)
+                                                </span>
+                                                <button class="text-slate-400 hover:text-primary transition-colors"
+                                                    title="Xem ảnh">
+                                                    <span
+                                                        class="material-symbols-outlined text-[18px]">visibility</span>
+                                                </button>
+                                            </div>
+                                            {% else %}
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                                    <span class="material-symbols-outlined text-[14px]">warning</span>
+                                                    Thiếu ({{ student.image_count }}/30)
+                                                </span>
+                                                <a href="{{ url_for('update_images_page', mssv=student.mssv) }}"
+                                                    class="text-yellow-600 hover:text-yellow-700 font-medium text-xs underline decoration-yellow-600/30 hover:decoration-yellow-600 transition-all">
+                                                    Bổ sung
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                            {% else %}
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                                    <span
+                                                        class="material-symbols-outlined text-[14px]">no_photography</span>
+                                                    Chưa có
+                                                </span>
+                                                <a href="{{ url_for('update_images_page', mssv=student.mssv) }}"
+                                                    class="text-primary hover:text-primary-dark font-medium text-xs underline decoration-primary/30 hover:decoration-primary transition-all">
+                                                    Bổ sung ngay
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="p-4 text-right">
+                                            <div
+                                                class="flex justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    class="p-1.5 text-slate-500 hover:text-primary hover:bg-primary/10 rounded transition-colors"
+                                                    title="Chỉnh sửa">
+                                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                                </button>
+                                                <button
+                                                    class="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                                    title="Xóa">
+                                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="6" class="p-8 text-center text-slate-500">Không có dữ liệu</td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div
+                            class="px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <p class="text-sm text-slate-500 dark:text-slate-400">
+                                Hiển thị <span class="font-medium text-slate-900 dark:text-white">{{ start + 1 }}</span>
+                                đến <span class="font-medium text-slate-900 dark:text-white">{{ end }}</span> trong số
+                                <span class="font-medium text-slate-900 dark:text-white">{{ total }}</span> sinh viên
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <a href="{{ url_for('students_page', page=page-1) if page > 1 else '#' }}"
+                                    class="px-3 py-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white bg-transparent border border-transparent hover:border-slate-200 dark:hover:border-slate-700 rounded-lg transition-all {{ 'opacity-50 pointer-events-none' if page <= 1 else '' }}">
+                                    Trước
+                                </a>
+                                <div class="flex items-center gap-1">
+                                    {% for p in range(1, total_pages + 1) %}
+                                    {% if p == 1 or p == total_pages or (p >= page - 1 and p <= page + 1) %} <a
+                                        href="{{ url_for('students_page', page=p) }}"
+                                        class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-colors {{ 'bg-primary text-white shadow-sm' if p == page else 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
+                                        {{ p }}</a>
+                                        {% elif p == page - 2 or p == page + 2 %}
+                                        <span class="text-slate-400 px-1">...</span>
+                                        {% endif %}
+                                        {% endfor %}
+                                </div>
+                                <a href="{{ url_for('students_page', page=page+1) if page < total_pages else '#' }}"
+                                    class="px-3 py-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white bg-transparent border border-transparent hover:border-slate-200 dark:hover:border-slate-700 rounded-lg transition-all {{ 'opacity-50 pointer-events-none' if page >= total_pages else '' }}">
+                                    Sau
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

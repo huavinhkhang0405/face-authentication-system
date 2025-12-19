@@ -1,0 +1,41 @@
+<aside
+    class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200">
+    <div class="p-6 flex items-center gap-3">
+        <div class="bg-primary/10 rounded-xl p-2">
+            <span class="material-symbols-outlined text-primary text-3xl">face</span>
+        </div>
+        <div class="flex flex-col">
+            <h1 class="text-lg font-bold leading-tight tracking-tight">FaceCheck Univ</h1>
+            <p class="text-text-secondary dark:text-slate-400 text-xs font-medium">Admin Panel</p>
+        </div>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2">
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl {% if active_page == 'dashboard' %}bg-primary/10 text-primary dark:text-blue-400{% else %}text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors"
+            href="/dashboard">
+            <span class="material-symbols-outlined {% if active_page == 'dashboard' %}fill-1{% endif %}">dashboard</span>
+            <span class="text-sm {% if active_page == 'dashboard' %}font-semibold{% else %}font-medium{% endif %}">Tổng quan</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl {% if active_page == 'class' %}bg-primary/10 text-primary dark:text-blue-400{% else %}text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors"
+            href="/class">
+            <span class="material-symbols-outlined">school</span>
+            <span class="text-sm {% if active_page == 'class' %}font-semibold{% else %}font-medium{% endif %}">Lớp học</span>
+        </a>
+
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            href="/attendance">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span class="text-sm font-medium">Điểm danh</span>
+        </a>
+
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            href="#">
+            <span class="material-symbols-outlined">analytics</span>
+            <span class="text-sm font-medium">Thống kê</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            href="{{ url_for('logout') }}">
+            <span class="material-symbols-outlined">logout</span>
+            <span class="text-sm font-medium">Đăng xuất</span>
+        </a>
+    </nav>
+</aside>

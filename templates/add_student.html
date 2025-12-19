@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Thêm Sinh viên - FaceCheck Univ</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "primary-dark": "#0f4bc4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+    <div class="flex h-screen w-full">
+        {% include 'sidebar.html' %}
+        
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-background-light dark:bg-background-dark">
+            <header
+                class="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark">
+                <div class="flex items-center gap-4">
+                    <a href="{{ url_for('students_page') }}" class="text-slate-500 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </a>
+                    <h2 class="text-xl font-bold tracking-tight">Thêm Sinh viên Mới</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden md:block">
+                        <p class="text-sm font-semibold">{{ user.name }}</p>
+                        <p class="text-xs text-slate-500">{{ user.role }}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500"></div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-4xl mx-auto flex flex-col gap-6">
+
+                    <!-- Thông tin sinh viên -->
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <h3 class="text-lg font-bold mb-4">📝 Thông tin Sinh viên</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Mã số sinh viên</label>
+                                <input id="input-mssv" type="text" 
+                                    class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary"
+                                    placeholder="Ví dụ: 2001230001" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Giới tính</label>
+                                <select id="input-gender"
+                                    class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary">
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium mb-2">Họ và tên</label>
+                                <input id="input-name" type="text"
+                                    class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary"
+                                    placeholder="Ví dụ: Nguyễn Văn A" />
+                            </div>
+                        </div>
+                        <button onclick="saveStudentInfo()"
+                            class="mt-4 w-full md:w-auto px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-colors">
+                            💾 Lưu thông tin và Tiếp tục
+                        </button>
+                        <p class="text-xs text-slate-500 mt-2">* Thông tin sẽ được lưu vào student_list.json</p>
+                    </div>
+
+                    <!-- Quy trình xử lý -->
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <h3 class="text-lg font-bold mb-4">🔄 Quy trình Thu thập và Xử lý Dữ liệu</h3>
+                        
+                        <!-- Step 1: Thu thập ảnh -->
+                        <div id="step-1" class="mb-4 p-4 rounded-lg border-2 border-slate-200 dark:border-slate-700">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">1</div>
+                                    <h4 class="font-semibold">Thu thập ảnh từ camera</h4>
+                                </div>
+                                <span id="status-1" class="text-sm text-slate-500">⏳ Chưa thực hiện</span>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 ml-11 mb-3">Mở camera và chụp ít nhất 30 ảnh khuôn mặt từ nhiều góc độ khác nhau. Ảnh sẽ được lưu vào data/raw/MSSV_HoTenKhongDau/ với format MSSV_HoTenKhongDau_STT.jpg</p>
+                            <button onclick="runStep1()" id="btn-step-1"
+                                class="ml-11 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors">
+                                📸 Bắt đầu thu thập
+                            </button>
+                        </div>
+
+                        <!-- Step 2: Cắt ảnh -->
+                        <div id="step-2" class="mb-4 p-4 rounded-lg border-2 border-slate-200 dark:border-slate-700 opacity-50">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center font-bold">2</div>
+                                    <h4 class="font-semibold">Cắt và chuẩn hóa ảnh</h4>
+                                </div>
+                                <span id="status-2" class="text-sm text-slate-500">⏳ Chờ bước 1</span>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 ml-11 mb-3">Phát hiện khuôn mặt và chuẩn hóa kích thước ảnh. Ảnh sẽ được lưu vào data/faces_aligned/MSSV_HoTenKhongDau/ với cùng format tên file</p>
+                            <button onclick="runStep2()" id="btn-step-2" disabled
+                                class="ml-11 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                ✂️ Cắt ảnh
+                            </button>
+                        </div>
+
+                        <!-- Step 3: Tạo embeddings -->
+                        <div id="step-3" class="mb-4 p-4 rounded-lg border-2 border-slate-200 dark:border-slate-700 opacity-50">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">3</div>
+                                    <h4 class="font-semibold">Tạo Embeddings</h4>
+                                </div>
+                                <span id="status-3" class="text-sm text-slate-500">⏳ Chờ bước 2</span>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 ml-11 mb-3">Trích xuất đặc trưng khuôn mặt thành vector embeddings. Kết quả lưu vào data/embeddings.npy và data/labels.npy</p>
+                            <button onclick="runStep3()" id="btn-step-3" disabled
+                                class="ml-11 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                🔹 Tạo embeddings
+                            </button>
+                        </div>
+
+                        <!-- Step 4: Train model -->
+                        <div id="step-4" class="mb-4 p-4 rounded-lg border-2 border-slate-200 dark:border-slate-700 opacity-50">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold">4</div>
+                                    <h4 class="font-semibold">Huấn luyện Mô hình</h4>
+                                </div>
+                                <span id="status-4" class="text-sm text-slate-500">⏳ Chờ bước 3</span>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 ml-11 mb-3">Train lại mô hình KNN với dữ liệu mới. Mô hình được lưu vào models/best_knn_faceid.pkl</p>
+                            <button onclick="runStep4()" id="btn-step-4" disabled
+                                class="ml-11 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                🎯 Train mô hình
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Camera capture area (hidden initially) -->
+                    <div id="camera-area" class="hidden bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <h3 class="text-lg font-bold mb-4">📹 Camera</h3>
+                        
+                        <!-- Chế độ chụp -->
+                        <div class="mb-4 flex items-center gap-4 justify-center">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="capture-mode" value="auto" checked
+                                    class="w-4 h-4 text-primary focus:ring-primary">
+                                <span class="font-medium">🤖 Tự động (mỗi 0.5s)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="capture-mode" value="manual"
+                                    class="w-4 h-4 text-primary focus:ring-primary">
+                                <span class="font-medium">👆 Thủ công (Click nút)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex flex-col items-center gap-4">
+                            <video id="video" width="640" height="480" autoplay class="rounded-lg border border-slate-300"></video>
+                            <canvas id="canvas" class="hidden"></canvas>
+                            <div class="flex gap-3">
+                                <button onclick="captureImage()" id="btn-manual-capture"
+                                    class="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium disabled:opacity-50">
+                                    📸 Chụp ảnh (<span id="capture-count">0</span>/30)
+                                </button>
+                                <button onclick="stopCamera()"
+                                    class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium">
+                                    🛑 Dừng camera
+                                </button>
+                            </div>
+                            <p class="text-sm text-slate-500" id="capture-status">Đang chờ...</p>
+                        </div>
+                    </div>
+
+                    <!-- Quay lại -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <a href="{{ url_for('students_page') }}"
+                            class="px-6 py-2.5 border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors">
+                            ← Quay lại
+                        </a>
+                        <button onclick="finishAndRedirect()" id="btn-finish" disabled
+                            class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            ✅ Hoàn thành
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let studentInfo = { mssv: '', name: '', gender: 'Nam' };
+        let capturedImages = [];
+        let stream = null;
+        let autoCapture = null;
+        let captureMode = 'auto'; // 'auto' hoặc 'manual'
+
+        function saveStudentInfo() {
+            const mssv = document.getElementById('input-mssv').value.trim();
+            const name = document.getElementById('input-name').value.trim();
+            const gender = document.getElementById('input-gender').value;
+
+            if (!mssv || !name) {
+                alert('⚠️ Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+
+            studentInfo = { mssv, name, gender };
+
+            // Gọi API lưu thông tin
+            fetch('/api/save-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(studentInfo)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    // Enable step 1
+                    document.getElementById('step-1').classList.remove('opacity-50');
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            })
+            .catch(err => alert('❌ Lỗi: ' + err));
+        }
+
+        // Lắng nghe thay đổi chế độ chụp
+        document.addEventListener('DOMContentLoaded', function() {
+            const radios = document.querySelectorAll('input[name="capture-mode"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    captureMode = this.value;
+                    updateCaptureMode();
+                });
+            });
+        });
+
+        function updateCaptureMode() {
+            const manualBtn = document.getElementById('btn-manual-capture');
+            const statusEl = document.getElementById('capture-status');
+            
+            if (captureMode === 'auto') {
+                manualBtn.disabled = true;
+                statusEl.textContent = '🤖 Chế độ tự động: Chụp mỗi 0.5 giây';
+                startAutoCapture();
+            } else {
+                manualBtn.disabled = false;
+                statusEl.textContent = '👆 Chế độ thủ công: Click nút để chụp';
+                stopAutoCapture();
+            }
+        }
+
+        function startAutoCapture() {
+            if (autoCapture) return; // Đã chạy rồi
+            
+            autoCapture = setInterval(() => {
+                if (capturedImages.length < 30) {
+                    captureImage();
+                } else {
+                    stopAutoCapture();
+                    alert('✅ Đã chụp đủ 30 ảnh! Hệ thống sẽ dừng camera và lưu ảnh.');
+                    stopCamera();
+                }
+            }, 500); // Chụp mỗi 0.5 giây
+        }
+
+        function stopAutoCapture() {
+            if (autoCapture) {
+                clearInterval(autoCapture);
+                autoCapture = null;
+            }
+        }
+
+        async function runStep1() {
+            if (!studentInfo.mssv) {
+                alert('⚠️ Vui lòng lưu thông tin sinh viên trước!');
+                return;
+            }
+
+            document.getElementById('status-1').textContent = '🔄 Đang mở camera...';
+            document.getElementById('btn-step-1').disabled = true;
+
+            // Show camera
+            document.getElementById('camera-area').classList.remove('hidden');
+            
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.getElementById('video').srcObject = stream;
+                document.getElementById('status-1').textContent = '🎥 Đang chụp...';
+                
+                // Bắt đầu chụp tự động nếu đang ở chế độ auto
+                captureMode = document.querySelector('input[name="capture-mode"]:checked').value;
+                updateCaptureMode();
+            } catch (err) {
+                alert('❌ Không thể mở camera: ' + err);
+                document.getElementById('status-1').textContent = '❌ Lỗi';
+            }
+        }
+
+        function captureImage() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            const imageData = canvas.toDataURL('image/jpeg');
+            capturedImages.push(imageData);
+            
+            document.getElementById('capture-count').textContent = capturedImages.length;
+            
+            // Update status
+            const remaining = 30 - capturedImages.length;
+            if (remaining > 0) {
+                document.getElementById('capture-status').textContent = 
+                    captureMode === 'auto' 
+                    ? `🤖 Tự động chụp... Còn ${remaining} ảnh nữa` 
+                    : `👆 Đã chụp ${capturedImages.length}/30. Còn ${remaining} ảnh`;
+            }
+        }
+
+        function stopCamera() {
+            if (capturedImages.length === 0) {
+                alert('⚠️ Chưa chụp ảnh nào!');
+                return;
+            }
+
+            // Dừng auto capture nếu đang chạy
+            stopAutoCapture();
+
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                document.getElementById('camera-area').classList.add('hidden');
+                
+                // Gửi ảnh lên server
+                saveImagesToServer();
+            }
+        }
+
+        function saveImagesToServer() {
+            document.getElementById('status-1').textContent = '💾 Đang lưu ảnh...';
+            
+            fetch('/api/capture-images', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mssv: studentInfo.mssv,
+                    name: studentInfo.name,
+                    images: capturedImages
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    completeStep1();
+                } else {
+                    alert('❌ ' + data.message);
+                    document.getElementById('status-1').textContent = '❌ Lỗi';
+                }
+            })
+            .catch(err => {
+                alert('❌ Lỗi: ' + err);
+                document.getElementById('status-1').textContent = '❌ Lỗi';
+            });
+        }
+
+        function completeStep1() {
+            document.getElementById('status-1').textContent = '✅ Hoàn thành (' + capturedImages.length + ' ảnh)';
+            document.getElementById('step-1').classList.add('border-green-500');
+            
+            // Enable step 2
+            document.getElementById('step-2').classList.remove('opacity-50');
+            document.getElementById('btn-step-2').disabled = false;
+            document.getElementById('status-2').textContent = '⏳ Sẵn sàng';
+        }
+
+        function runStep2() {
+            document.getElementById('status-2').textContent = '🔄 Đang xử lý...';
+            document.getElementById('btn-step-2').disabled = true;
+
+            fetch('/api/align-faces', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mssv: studentInfo.mssv })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('status-2').textContent = '✅ Hoàn thành';
+                    document.getElementById('step-2').classList.add('border-green-500');
+                    
+                    // Enable step 3
+                    document.getElementById('step-3').classList.remove('opacity-50');
+                    document.getElementById('btn-step-3').disabled = false;
+                    document.getElementById('status-3').textContent = '⏳ Sẵn sàng';
+                } else {
+                    alert('❌ ' + data.message);
+                    document.getElementById('status-2').textContent = '❌ Lỗi';
+                }
+            })
+            .catch(err => {
+                alert('❌ Lỗi: ' + err);
+                document.getElementById('status-2').textContent = '❌ Lỗi';
+            });
+        }
+
+        function runStep3() {
+            document.getElementById('status-3').textContent = '🔄 Đang xử lý...';
+            document.getElementById('btn-step-3').disabled = true;
+
+            fetch('/api/create-embeddings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('status-3').textContent = '✅ Hoàn thành';
+                    document.getElementById('step-3').classList.add('border-green-500');
+                    
+                    // Enable step 4
+                    document.getElementById('step-4').classList.remove('opacity-50');
+                    document.getElementById('btn-step-4').disabled = false;
+                    document.getElementById('status-4').textContent = '⏳ Sẵn sàng';
+                } else {
+                    alert('❌ ' + data.message);
+                    document.getElementById('status-3').textContent = '❌ Lỗi';
+                }
+            })
+            .catch(err => {
+                alert('❌ Lỗi: ' + err);
+                document.getElementById('status-3').textContent = '❌ Lỗi';
+            });
+        }
+
+        function runStep4() {
+            document.getElementById('status-4').textContent = '🔄 Đang train...';
+            document.getElementById('btn-step-4').disabled = true;
+
+            fetch('/api/train-model', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('status-4').textContent = '✅ Hoàn thành';
+                    document.getElementById('step-4').classList.add('border-green-500');
+                    
+                    // Enable finish button
+                    document.getElementById('btn-finish').disabled = false;
+                    alert('🎉 Đã hoàn thành tất cả các bước! Sinh viên đã được thêm vào hệ thống.');
+                } else {
+                    alert('❌ ' + data.message);
+                    document.getElementById('status-4').textContent = '❌ Lỗi';
+                }
+            })
+            .catch(err => {
+                alert('❌ Lỗi: ' + err);
+                document.getElementById('status-4').textContent = '❌ Lỗi';
+            });
+        }
+
+        function finishAndRedirect() {
+            window.location.href = "{{ url_for('students_page') }}";
+        }
+    </script>
+</body>
+
+</html>
