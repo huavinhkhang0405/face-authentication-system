@@ -19,5 +19,4 @@ RESULT_DIR = os.path.join(BASE_DIR, "results")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 IMAGE_SIZE = 160
 
-# File lưu khóa mã hóa (QUAN TRỌNG: Lưu trữ an toàn!)
 KEY_FILE = os.path.join(BASE_DIR, "encryption.key")
