@@ -51,26 +51,20 @@ def encrypt_all(delete_original=False):
 
         folder_name = os.path.basename(folder_path)
         print(f"\n📂 Đang xử lý: {folder_name}/")
-        
-        # Duyệt cây thư mục
+
         for root, dirs, files in os.walk(folder_path):
             for file in files:
                 if file.startswith(".") or file.endswith(".enc"): 
                     continue
-                
-                # 1. Đường dẫn file gốc
+
                 src_path = os.path.join(root, file)
                 
-                # 2. Tính toán đường dẫn đích để giữ nguyên cấu trúc
                 rel_path = os.path.relpath(src_path, start=config.DATA_DIR)
-                
-                # Ghép với folder đích + thêm đuôi .enc
+
                 dest_path = os.path.join(OUTPUT_FOLDER, rel_path) + ".enc"
-                
-                # Tạo thư mục cha nếu chưa có
+
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 
-                # 3. Mã hóa và ghi file
                 try:
                     with open(src_path, "rb") as f:
                         data = f.read()
@@ -93,8 +87,7 @@ def encrypt_all(delete_original=False):
     print(f"✅ Đã mã hóa: {total_encrypted} file")
     print(f"❌ Lỗi: {total_errors} file")
     print(f"💾 Lưu tại: {OUTPUT_FOLDER}")
-    
-    # Xóa folder gốc nếu được yêu cầu và không có lỗi
+
     if delete_original and total_errors == 0:
         print(f"\n{'='*60}")
         print(f"🗑️  XÓA DỮ LIỆU GỐC (Đã mã hóa an toàn)")
@@ -150,10 +143,9 @@ def decrypt_all(encrypted_dir=OUTPUT_FOLDER, output_dir=None):
                 continue
             
             src_path = os.path.join(root, file)
-            
-            # Tính đường dẫn đích (bỏ .enc)
+
             rel_path = os.path.relpath(src_path, start=encrypted_dir)
-            dest_path = os.path.join(output_dir, rel_path[:-4])  # Remove .enc
+            dest_path = os.path.join(output_dir, rel_path[:-4])
             
             os.makedirs(os.path.dirname(dest_path), exist_ok=True)
             
@@ -177,16 +169,13 @@ def decrypt_all(encrypted_dir=OUTPUT_FOLDER, output_dir=None):
 
 if __name__ == "__main__":
     import sys
-    
-    # Kiểm tra xem config có đúng không trước khi chạy
+
     print(f"Đang đọc config từ: {config.__file__}")
     if not os.path.exists(config.DATA_DIR):
         print(f"Lỗi: Không tìm thấy DATA_DIR tại {config.DATA_DIR}")
     else:
-        # Hỗ trợ tham số dòng lệnh
         if len(sys.argv) > 1 and sys.argv[1] == "decrypt":
             decrypt_all()
         else:
-            # Mã hóa và hỏi có xóa gốc không
             delete = input("\n⚠️  Xóa dữ liệu gốc sau khi mã hóa? (yes/no): ").lower() == "yes"
             encrypt_all(delete_original=delete)
