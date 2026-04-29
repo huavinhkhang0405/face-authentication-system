@@ -13,15 +13,17 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import json
 
 # --- CẤU HÌNH ĐƯỜNG DẪN ĐỂ IMPORT SRC ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_DIR = os.path.join(BASE_DIR, "src")
-sys.path.insert(0, SRC_DIR)
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = ROOT_DIR
+SRC_DIR = os.path.join(ROOT_DIR, "src")
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
 # Import các module AI của bạn
-from src.detector import FaceDetector
-from src.embedder import FaceEmbedder
-from src.liveness import calculate_yaw_from_frame  
-from src.config import MODEL_DIR, RESULT_DIR, RAW_DIR, DATA_DIR, KEY_FILE
+from src.model.detector import FaceDetector
+from src.model.embedder import FaceEmbedder
+from src.model.liveness import calculate_yaw_from_frame
+from src.utils.config import MODEL_DIR, RESULT_DIR, RAW_DIR, DATA_DIR, KEY_FILE
 from cryptography.fernet import Fernet
 
 app = Flask(__name__)
@@ -487,7 +489,7 @@ def api_align_faces():
             return jsonify({'success': False, 'message': 'Thiếu MSSV'}), 400
         
         # Import và chạy detect_align cho sinh viên cụ thể
-        from src.detect_align import align_faces_for_student
+        from src.data.detect_align import align_faces_for_student
         
         # Tìm folder của sinh viên (hỗ trợ cả encrypted)
         folder_path, is_encrypted, folder_name = get_student_folder_path(mssv, check_encrypted=True)

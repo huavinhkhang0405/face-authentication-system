@@ -4,9 +4,9 @@ import cv2
 from facenet_pytorch import InceptionResnetV1
 from tqdm import tqdm
 from sklearn.preprocessing import LabelEncoder
-import os, joblib
-#from src.config import ALIGNED_DIR, DATA_DIR, MODEL_DIR, KEY_FILE
-from config import ALIGNED_DIR, DATA_DIR, MODEL_DIR, KEY_FILE
+import os
+import joblib
+from src.utils.config import ALIGNED_DIR, DATA_DIR, MODEL_DIR, KEY_FILE
 from cryptography.fernet import Fernet
 
 # Đường dẫn encrypted_data

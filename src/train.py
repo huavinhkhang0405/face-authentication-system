@@ -1,9 +1,9 @@
 import ast
+import os
 import joblib
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
-from config import MODEL_DIR, DATA_DIR, RESULT_DIR
-import os
+from src.utils.config import MODEL_DIR, DATA_DIR, RESULT_DIR
 
 # Đọc embedding
 X = np.load(os.path.join(DATA_DIR, "embeddings.npy"))

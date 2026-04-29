@@ -1,8 +1,8 @@
-import os 
+import os
 import shutil
 import cryptography.fernet as fernet
 from cryptography.fernet import Fernet
-from src import config
+from src.utils import config
 
 TARGET_FOLDER = [config.RAW_DIR, config.ALIGNED_DIR]
 

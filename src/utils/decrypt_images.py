@@ -1,12 +1,6 @@
-import sys
 import os
-
-# Thêm thư mục src vào path
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(BASE_DIR, "src"))
-
-from image_encryption import decrypt_all
-from src.config import DATA_DIR, KEY_FILE
+from src.utils.image_encryption import decrypt_all
+from src.utils.config import DATA_DIR, KEY_FILE
 
 def main():
     print("="*60)

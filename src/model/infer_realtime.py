@@ -3,10 +3,10 @@ import time
 import joblib
 import os
 import ast
-from src.detector import FaceDetector
-from src.embedder import FaceEmbedder
-from src.liveness import check_liveness_senior, YAW_THRESHOLD, TIMEOUT
-from src.config import MODEL_DIR, RESULT_DIR
+from src.model.detector import FaceDetector
+from src.model.embedder import FaceEmbedder
+from src.model.liveness import check_liveness_senior, YAW_THRESHOLD, TIMEOUT
+from src.utils.config import MODEL_DIR, RESULT_DIR
 
 
 def recognize_realtime():

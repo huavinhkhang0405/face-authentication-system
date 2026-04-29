@@ -1,5 +1,5 @@
 import os
-from src.config import DATA_DIR, RAW_DIR, ALIGNED_DIR
+from src.utils.config import DATA_DIR, RAW_DIR, ALIGNED_DIR
 
 encrypted_raw = os.path.join(DATA_DIR, "encrypted_data", "raw")
 encrypted_aligned = os.path.join(DATA_DIR, "encrypted_data", "faces_aligned")

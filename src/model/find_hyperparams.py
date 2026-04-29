@@ -1,14 +1,13 @@
 import time
+import os
 import numpy as np
-from pathlib import Path
 from sklearn.model_selection import cross_val_score, StratifiedKFold, train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import normalize
 import joblib
 from tqdm import tqdm
-from coa import COA
-from config import DATA_DIR, MODEL_DIR, RESULT_DIR
-import os
+from src.model.coa import COA
+from src.utils.config import DATA_DIR, MODEL_DIR, RESULT_DIR
 
 
 # ======== Tải dữ liệu embedding ========

@@ -35,6 +35,7 @@ data/raw/
 data/faces_aligned/
 data/encrypted_data/
 data/*.npy
+student_list.json
 
 # 📊 Model và kết quả
 models/*.pkl

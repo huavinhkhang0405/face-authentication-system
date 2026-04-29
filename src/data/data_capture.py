@@ -1,9 +1,8 @@
+import os
 import cv2
 import time
-from detector import FaceDetector
-from config import RAW_DIR
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.model.detector import FaceDetector
+from src.utils.config import RAW_DIR
 
 # =====================================
 # CẤU HÌNH

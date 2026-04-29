@@ -1,11 +1,11 @@
 import sys
 import os
 
-# Thêm đường dẫn src vào PYTHONPATH
+# Thêm đường dẫn project vào PYTHONPATH
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.join(BASE_DIR, "src")
-sys.path.insert(0, SRC_DIR)
-sys.path.insert(0, BASE_DIR)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 def print_header():
     """In tiêu đề menu"""
@@ -41,7 +41,7 @@ def option_1_capture():
     print("📸 THU THẬP ẢNH TỪ CAMERA")
     print("=" * 70)
     try:
-        from data_capture import capture_images
+        from src.data.data_capture import capture_images
         capture_images()
         print("\n✅ Hoàn thành thu thập ảnh!")
     except Exception as e:
@@ -56,7 +56,7 @@ def option_2_align():
     print("=" * 70)
     
     # Kiểm tra thư mục raw hoặc encrypted_data/raw
-    from src.config import RAW_DIR, DATA_DIR
+    from src.utils.config import RAW_DIR, DATA_DIR
     encrypted_raw = os.path.join(DATA_DIR, "encrypted_data", "raw")
     
     has_raw_data = os.path.exists(RAW_DIR) and len(os.listdir(RAW_DIR)) > 0
@@ -72,7 +72,7 @@ def option_2_align():
         print(f"\n📁 Phát hiện {len(os.listdir(encrypted_raw))} folder trong encrypted_data/raw")
     
     try:
-        from detect_align import align_faces
+        from src.data.detect_align import align_faces
         align_faces()
         print("\n✅ Hoàn thành chuẩn hóa ảnh!")
     except Exception as e:
@@ -87,7 +87,7 @@ def option_3_embed():
     print("=" * 70)
     
     # Kiểm tra thư mục aligned hoặc encrypted_data/faces_aligned
-    from src.config import ALIGNED_DIR, DATA_DIR
+    from src.utils.config import ALIGNED_DIR, DATA_DIR
     encrypted_aligned = os.path.join(DATA_DIR, "encrypted_data", "faces_aligned")
     
     has_aligned_data = os.path.exists(ALIGNED_DIR) and len(os.listdir(ALIGNED_DIR)) > 0
@@ -104,7 +104,7 @@ def option_3_embed():
         print("🔓 Hệ thống sẽ tự động giải mã để tạo embeddings...")
     
     try:
-        from src.embedder import FaceEmbedder
+        from src.model.embedder import FaceEmbedder
         embedder = FaceEmbedder()
         embedder.build_embeddings()
         print("\n✅ Hoàn thành tạo embeddings!")
@@ -120,7 +120,7 @@ def option_4_find_hyperparams():
     print("=" * 70)
     
     # Kiểm tra embeddings
-    from src.config import DATA_DIR
+    from src.utils.config import DATA_DIR
     embeddings_file = os.path.join(DATA_DIR, "embeddings.npy")
     if not os.path.exists(embeddings_file):
         print("\n⚠️  Chưa có embeddings!")
@@ -132,7 +132,7 @@ def option_4_find_hyperparams():
     try:
         # Chạy script find_hyperparams.py bằng subprocess
         import subprocess
-        script_path = os.path.join(SRC_DIR, "find_hyperparams.py")
+        script_path = os.path.join(SRC_DIR, "model", "find_hyperparams.py")
         result = subprocess.run([sys.executable, script_path], 
                               capture_output=False, 
                               text=True,
@@ -153,7 +153,7 @@ def option_5_train():
     print("=" * 70)
     
     # Kiểm tra embeddings và tham số
-    from src.config import DATA_DIR, RESULT_DIR
+    from src.utils.config import DATA_DIR, RESULT_DIR
     embeddings_file = os.path.join(DATA_DIR, "embeddings.npy")
     params_file = os.path.join(RESULT_DIR, "best_params_faceid.txt")
     
@@ -197,7 +197,7 @@ def option_6_recognize():
     print("  - Nhấn 'Q' để thoát")
     print("\n🚀 Bắt đầu...")
     try:
-        from src.infer_realtime import recognize_realtime
+        from src.model.infer_realtime import recognize_realtime
         recognize_realtime()
         print("\n✅ Đã kết thúc nhận diện!")
     except Exception as e:
@@ -235,7 +235,7 @@ def main():
                     print("❌ Đã hủy.")
             elif choice == "5":
                 # Kiểm tra xem đã có tham số tối ưu chưa
-                from src.config import RESULT_DIR
+                from src.utils.config import RESULT_DIR
                 params_file = os.path.join(RESULT_DIR, "best_params_faceid.txt")
                 if not os.path.exists(params_file):
                     print("\n⚠️  Chưa có tham số tối ưu!")
@@ -246,7 +246,7 @@ def main():
                 input("\nNhấn Enter để quay lại menu...")
             elif choice == "6":
                 # Kiểm tra xem đã có mô hình chưa
-                from src.config import MODEL_DIR
+                from src.utils.config import MODEL_DIR
                 model_file = os.path.join(MODEL_DIR, "best_knn_faceid.pkl")
                 if not os.path.exists(model_file):
                     print("\n⚠️  Chưa có mô hình đã train!")

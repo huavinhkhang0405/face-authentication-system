@@ -1,9 +1,10 @@
-import os, cv2
+import os
+import cv2
 import unicodedata
-from tqdm import tqdm
-from config import RAW_DIR, ALIGNED_DIR, IMAGE_SIZE, DATA_DIR, KEY_FILE
-from cryptography.fernet import Fernet
 import numpy as np
+from tqdm import tqdm
+from cryptography.fernet import Fernet
+from src.utils.config import RAW_DIR, ALIGNED_DIR, IMAGE_SIZE, DATA_DIR, KEY_FILE
 
 # Đường dẫn encrypted_data
 ENCRYPTED_RAW_DIR = os.path.join(DATA_DIR, "encrypted_data", "raw")
