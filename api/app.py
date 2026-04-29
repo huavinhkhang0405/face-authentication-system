@@ -12,14 +12,12 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file
 import json
 
-# --- CẤU HÌNH ĐƯỜNG DẪN ĐỂ IMPORT SRC ---
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = ROOT_DIR
 SRC_DIR = os.path.join(ROOT_DIR, "src")
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-# Import các module AI của bạn
 from src.model.detector import FaceDetector
 from src.model.embedder import FaceEmbedder
 from src.model.liveness import calculate_yaw_from_frame
@@ -29,7 +27,6 @@ from cryptography.fernet import Fernet
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 
-# Đường dẫn đến folder encrypted_data
 ENCRYPTED_RAW_DIR = os.path.join(DATA_DIR, "encrypted_data", "raw")
 
 def count_encrypted_images(student_folder_name):
@@ -37,8 +34,7 @@ def count_encrypted_images(student_folder_name):
     encrypted_folder = os.path.join(ENCRYPTED_RAW_DIR, student_folder_name)
     if not os.path.exists(encrypted_folder):
         return 0
-    
-    # Đếm các file .enc (ảnh đã mã hóa)
+
     encrypted_files = [f for f in os.listdir(encrypted_folder) 
                       if f.endswith('.enc')]
     return len(encrypted_files)
@@ -53,15 +49,13 @@ def get_student_folder_path(mssv, check_encrypted=True):
     Returns:
         tuple: (folder_path, is_encrypted, folder_name)
     """
-    # Kiểm tra trong RAW_DIR trước
     if os.path.exists(RAW_DIR):
         student_folders = [d for d in os.listdir(RAW_DIR) 
                           if os.path.isdir(os.path.join(RAW_DIR, d)) and mssv in d]
         if student_folders:
             folder_name = student_folders[0]
             return os.path.join(RAW_DIR, folder_name), False, folder_name
-    
-    # Nếu không tìm thấy và check_encrypted=True, kiểm tra trong encrypted_data
+
     if check_encrypted and os.path.exists(ENCRYPTED_RAW_DIR):
         student_folders = [d for d in os.listdir(ENCRYPTED_RAW_DIR) 
                           if os.path.isdir(os.path.join(ENCRYPTED_RAW_DIR, d)) and mssv in d]
@@ -84,7 +78,6 @@ def encrypt_and_save_image(img, mssv, name_no_accent, index):
         bool: True nếu thành công
     """
     try:
-        # Load hoặc tạo khóa mã hóa
         if os.path.exists(KEY_FILE):
             key = open(KEY_FILE, "rb").read()
         else:
@@ -94,20 +87,16 @@ def encrypt_and_save_image(img, mssv, name_no_accent, index):
             print(f"🔑 Đã tạo khóa mới: {KEY_FILE}")
         
         cipher = Fernet(key)
-        
-        # Tạo folder cho sinh viên trong encrypted_data
+
         folder_name = f"{mssv}_{name_no_accent}"
         encrypted_folder = os.path.join(ENCRYPTED_RAW_DIR, folder_name)
         os.makedirs(encrypted_folder, exist_ok=True)
         
-        # Encode ảnh thành bytes
         _, img_encoded = cv2.imencode('.jpg', img)
         img_bytes = img_encoded.tobytes()
-        
-        # Mã hóa
+
         encrypted_data = cipher.encrypt(img_bytes)
-        
-        # Lưu file mã hóa
+
         filename = f"{mssv}_{name_no_accent}_{index:03d}.jpg.enc"
         encrypted_path = os.path.join(encrypted_folder, filename)
         
@@ -119,12 +108,10 @@ def encrypt_and_save_image(img, mssv, name_no_accent, index):
         print(f"❌ Lỗi mã hóa ảnh: {e}")
         return False
 
-# --- 1. KHỞI TẠO MÔ HÌNH (LOAD 1 LẦN) ---
 print("⏳ Đang tải mô hình AI...")
 detector = FaceDetector()
 embedder = FaceEmbedder()
 
-# Load Model KNN & Label Encoder
 knn_path = os.path.join(MODEL_DIR, "best_knn_faceid.pkl")
 le_path = os.path.join(MODEL_DIR, "label_encoder.pkl")
 params_path = os.path.join(RESULT_DIR, "best_params_faceid.txt")
@@ -132,8 +119,7 @@ params_path = os.path.join(RESULT_DIR, "best_params_faceid.txt")
 if os.path.exists(knn_path) and os.path.exists(le_path):
     knn = joblib.load(knn_path)
     le = joblib.load(le_path)
-    
-    # Load tham số metric để set ngưỡng
+
     with open(params_path, "r") as f:
         params = ast.literal_eval(f.readline().split("},")[0] + "}")
     metric = params.get("metric", "euclidean")
@@ -143,8 +129,6 @@ else:
     print("⚠️ Cảnh báo: Chưa tìm thấy file model. Vui lòng train trước!")
     knn = None
 
-# --- 2. QUẢN LÝ TRẠNG THÁI LIVENESS (SESSION STATE) ---
-# Vì HTTP stateless, ta cần lưu trạng thái quay đầu của từng Client (theo IP)
 client_states = {}
 
 class ClientState:
@@ -152,13 +136,11 @@ class ClientState:
         self.reset()
     
     def reset(self):
-        self.step = "detect" # detect -> liveness -> recognized
+        self.step = "detect"
         self.initial_yaw = None
         self.start_time = None
         self.detected_name = None
         self.last_active = time.time()
-
-# --- 3. DATABASE GIẢ LẬP & LOGIN ---
 users_db = {
     "admin@gmail.com": {"password": "admin123", "name": "Quản trị viên", "role": "Admin"},
     "teacher@gmail.com": {"password": "123456", "name": "Trần Như Ý", "role": "Giảng viên"}
@@ -195,8 +177,7 @@ def class_page():
 def students_page():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    
-    # Load danh sách sinh viên từ JSON
+
     import json
     import math
     
@@ -216,40 +197,32 @@ def students_page():
     except Exception as e:
         print(f"❌ Lỗi đọc file: {e}")
         all_students = []
-    
-    # Pagination
+
     page = request.args.get('page', 1, type=int)
     per_page = 20
     total = len(all_students)
     total_pages = math.ceil(total / per_page) if total > 0 else 1
-    
-    # Slice students for current page
+
     start = (page - 1) * per_page
     end = start + per_page
     students = all_students[start:end]
-    
-    # Thống kê dữ liệu khuôn mặt cho TẤT CẢ sinh viên
+
     stats = {
-        'has_sufficient': 0,  # >=30 ảnh
-        'has_insufficient': 0,  # <30 ảnh
-        'has_none': 0,  # không có ảnh
+        'has_sufficient': 0,  
+        'has_insufficient': 0,  
+        'has_none': 0,  
         'male_count': 0,
         'female_count': 0
     }
-    
-    # Kiểm tra dữ liệu khuôn mặt cho mỗi sinh viên trên trang hiện tại
+
     for student in students:
         mssv = student['mssv']
-        # Tìm folder có chứa MSSV trong tên (format: MSSV_TenSV)
         folder_path, is_encrypted, folder_name = get_student_folder_path(mssv, check_encrypted=True)
         
         if folder_path:
-            # Đếm số ảnh trong folder
             if is_encrypted:
-                # Đếm file .enc trong encrypted_data
                 image_count = count_encrypted_images(folder_name)
             else:
-                # Đếm file ảnh thông thường
                 image_files = [f for f in os.listdir(folder_path) 
                               if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
                 image_count = len(image_files)
@@ -261,8 +234,7 @@ def students_page():
             student['has_images'] = False
             student['image_count'] = 0
             student['is_sufficient'] = False
-    
-    # Thống kê cho TẤT CẢ sinh viên (không chỉ trang hiện tại)
+
     for student in all_students:
         mssv = student['mssv']
         folder_path, is_encrypted, folder_name = get_student_folder_path(mssv, check_encrypted=True)
@@ -281,14 +253,12 @@ def students_page():
                 stats['has_insufficient'] += 1
         else:
             stats['has_none'] += 1
-        
-        # Đếm giới tính
+
         if student.get('gender') == 'Nam':
             stats['male_count'] += 1
         elif student.get('gender') == 'Nữ':
             stats['female_count'] += 1
-    
-    # Tính phần trăm
+
     stats['with_images'] = stats['has_sufficient'] + stats['has_insufficient']
     stats['completion_rate'] = round((stats['has_sufficient'] / total * 100), 1) if total > 0 else 0
     stats['missing_count'] = stats['has_none']
@@ -320,8 +290,7 @@ def add_student_page():
 def update_images_page(mssv):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    
-    # 1. Load thông tin sinh viên
+
     student_file = os.path.join(BASE_DIR, 'student_list.json')
     student_info = None
     
@@ -329,7 +298,6 @@ def update_images_page(mssv):
         try:
             with open(student_file, 'r', encoding='utf-8') as f:
                 students = json.load(f)
-                # Tìm sinh viên theo MSSV
                 for s in students:
                     if s.get('mssv') == mssv:
                         student_info = s
@@ -340,23 +308,20 @@ def update_images_page(mssv):
     if not student_info:
         flash('Không tìm thấy sinh viên!', 'error')
         return redirect(url_for('students_page'))
-    
-    # 2. Kiểm tra số lượng ảnh hiện có
+
     folder_path, is_encrypted, folder_name = get_student_folder_path(mssv, check_encrypted=True)
     
     current_count = 0
     if folder_path:
-        # Đếm số ảnh
         if is_encrypted:
             current_count = count_encrypted_images(folder_name)
         else:
             image_files = [f for f in os.listdir(folder_path) 
                           if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
             current_count = len(image_files)
-    
-    # 3. Render template và truyền biến user
+
     return render_template('update_images.html', 
-                           user=session,             # [QUAN TRỌNG] Biến này sửa lỗi 'user' is undefined
+                           user=session,
                            active_page='students',
                            student=student_info,
                            current_count=current_count)
@@ -375,16 +340,13 @@ def api_update_images():
         
         if not mssv or not name or not images:
             return jsonify({'success': False, 'message': 'Thiếu thông tin'}), 400
-        
-        # Chuyển tên sang không dấu
+
         name_no_accent = remove_accents(name)
         folder_name = f"{mssv}_{name_no_accent}"
-        
-        # Đếm số ảnh hiện có trong encrypted_data
+
         current_count = count_encrypted_images(folder_name)
         start_index = current_count + 1
-        
-        # Mã hóa và lưu từng ảnh mới
+
         saved_count = 0
         for idx, img_data in enumerate(images):
             if 'base64,' in img_data:
@@ -395,7 +357,6 @@ def api_update_images():
             img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
             
             if img is not None:
-                # Mã hóa và lưu vào encrypted_data
                 if encrypt_and_save_image(img, mssv, name_no_accent, start_index + idx):
                     saved_count += 1
         
@@ -415,11 +376,8 @@ def api_update_images():
 def remove_accents(text):
     """Chuyển văn bản tiếng Việt có dấu thành không dấu"""
     import unicodedata
-    # Chuẩn hóa Unicode về dạng NFD (tách ký tự và dấu)
     nfd = unicodedata.normalize('NFD', text)
-    # Loại bỏ các ký tự dấu (Mn = Mark, Nonspacing)
     without_accents = ''.join(c for c in nfd if unicodedata.category(c) != 'Mn')
-    # Xử lý các ký tự đặc biệt còn lại
     replacements = {
         'đ': 'd', 'Đ': 'D',
         ' ': '', '-': '', '_': ''
@@ -438,16 +396,14 @@ def api_capture_images():
         data = request.get_json()
         mssv = data.get('mssv')
         name = data.get('name')
-        images = data.get('images', [])  # Danh sách base64 images
+        images = data.get('images', [])
         
         if not mssv or not name or not images:
             return jsonify({'success': False, 'message': 'Thiếu thông tin'}), 400
-        
-        # Chuyển tên sang không dấu và viết liền
+
         name_no_accent = remove_accents(name)
         folder_name = f"{mssv}_{name_no_accent}"
-        
-        # Mã hóa và lưu từng ảnh với format: MSSV_HoTenKhongDau_STT.jpg.enc
+
         saved_count = 0
         for idx, img_data in enumerate(images):
             # Remove base64 header
@@ -460,7 +416,6 @@ def api_capture_images():
             img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
             
             if img is not None:
-                # Mã hóa và lưu vào encrypted_data
                 if encrypt_and_save_image(img, mssv, name_no_accent, idx + 1):
                     saved_count += 1
         
@@ -487,17 +442,14 @@ def api_align_faces():
         
         if not mssv:
             return jsonify({'success': False, 'message': 'Thiếu MSSV'}), 400
-        
-        # Import và chạy detect_align cho sinh viên cụ thể
+
         from src.data.detect_align import align_faces_for_student
-        
-        # Tìm folder của sinh viên (hỗ trợ cả encrypted)
+
         folder_path, is_encrypted, folder_name = get_student_folder_path(mssv, check_encrypted=True)
         
         if not folder_path:
             return jsonify({'success': False, 'message': 'Không tìm thấy folder ảnh'}), 404
-        
-        # Chạy align với folder_name
+
         result = align_faces_for_student(folder_name)
         
         return jsonify({
@@ -516,11 +468,7 @@ def api_create_embeddings():
         return jsonify({'success': False, 'message': 'Chưa đăng nhập'}), 401
     
     try:
-        # Rebuild toàn bộ embeddings (bao gồm sinh viên mới)
         embedder.build_embeddings()
-        
-        # Tự động mã hóa sau khi embedding (đã tích hợp trong embedder.build_embeddings)
-        # Không cần gọi riêng nữa vì đã có trong embedder.py
         
         return jsonify({
             'success': True,
@@ -539,7 +487,6 @@ def api_train_model():
         return jsonify({'success': False, 'message': 'Chưa đăng nhập'}), 401
     
     try:
-        # Chạy train.py
         import subprocess
         script_path = os.path.join(SRC_DIR, "train.py")
         result = subprocess.run([sys.executable, script_path], 
@@ -548,7 +495,6 @@ def api_train_model():
                               cwd=BASE_DIR)
         
         if result.returncode == 0:
-            # ✅ Reload model mới vào memory
             global knn, le, THRESHOLD
             
             knn_path = os.path.join(MODEL_DIR, "best_knn_faceid.pkl")
@@ -558,8 +504,7 @@ def api_train_model():
             if os.path.exists(knn_path) and os.path.exists(le_path):
                 knn = joblib.load(knn_path)
                 le = joblib.load(le_path)
-                
-                # Reload threshold
+
                 with open(params_path, "r") as f:
                     params = ast.literal_eval(f.readline().split("},")[0] + "}")
                 metric = params.get("metric", "euclidean")
@@ -595,27 +540,23 @@ def api_save_student():
         
         if not all([mssv, name, gender]):
             return jsonify({'success': False, 'message': 'Thiếu thông tin'}), 400
-        
-        # Load student_list.json
+
         student_file = os.path.join(BASE_DIR, 'student_list.json')
         students = []
         
         if os.path.exists(student_file):
             with open(student_file, 'r', encoding='utf-8') as f:
                 students = json.load(f)
-        
-        # Kiểm tra trùng MSSV
+
         if any(s['mssv'] == mssv for s in students):
             return jsonify({'success': False, 'message': 'MSSV đã tồn tại'}), 400
-        
-        # Thêm sinh viên mới
+
         students.append({
             'mssv': mssv,
             'name': name,
             'gender': gender
         })
-        
-        # Lưu lại file
+
         with open(student_file, 'w', encoding='utf-8') as f:
             json.dump(students, f, ensure_ascii=False, indent=2)
         
@@ -633,7 +574,6 @@ def attendance_page():
         return redirect(url_for('login'))
     
     try:
-        # Load danh sách sinh viên
         import json
         student_file = os.path.join(BASE_DIR, 'student_list.json')
         students = []
@@ -645,17 +585,16 @@ def attendance_page():
             except Exception as e:
                 print(f"Lỗi đọc file JSON: {e}")
                 flash(f"Không thể tải danh sách sinh viên: {e}", "error")
-        
-        # Load dữ liệu điểm danh từ CSV của ngày hôm nay
+
         date_str = datetime.now().strftime("%Y-%m-%d")
         csv_filename = f"attendance_{date_str}.csv"
-        attended_records = {}  # {mssv: time}
+        attended_records = {}
         
         if os.path.exists(csv_filename):
             try:
                 with open(csv_filename, 'r', encoding='utf-8') as f:
                     csv_reader = csv.reader(f)
-                    next(csv_reader, None)  # Skip header
+                    next(csv_reader, None)
                     for row in csv_reader:
                         if len(row) >= 3:
                             mssv = row[0]
@@ -664,8 +603,7 @@ def attendance_page():
                 print(f"✅ Đã load {len(attended_records)} bản ghi điểm danh từ {csv_filename}")
             except Exception as e:
                 print(f"⚠️ Lỗi đọc file CSV điểm danh: {e}")
-        
-        # Đánh dấu sinh viên đã điểm danh
+
         for student in students:
             if student['mssv'] in attended_records:
                 student['attended'] = True
@@ -710,24 +648,20 @@ def test_students():
             "path": student_file
         })
 
-# --- Route Xuất Báo Cáo ---
 @app.route('/export_report')
 def export_report():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     
     try:
-        # Tìm file CSV mới nhất
         csv_files = glob.glob("attendance_*.csv")
         
         if not csv_files:
             flash('Chưa có dữ liệu điểm danh nào!', 'error')
             return redirect(url_for('dashboard'))
-        
-        # Lấy file mới nhất
+
         latest_file = max(csv_files, key=os.path.getctime)
-        
-        # Gửi file để download
+
         return send_file(
             latest_file,
             mimetype='text/csv',
@@ -739,7 +673,6 @@ def export_report():
         flash('Lỗi khi xuất báo cáo!', 'error')
         return redirect(url_for('dashboard'))
 
-# --- 4. HÀM GHI LOG CSV (ĐIỂM DANH) ---
 def get_attendance_status(check_time):
     """Xác định trạng thái điểm danh dựa trên thời gian
     
@@ -752,16 +685,12 @@ def get_attendance_status(check_time):
     hour = check_time.hour
     minute = check_time.minute
     
-    # Chuyển thành số phút từ 0h
     current_minutes = hour * 60 + minute
     
-    # 12:30 = 12*60 + 30 = 750 phút
-    # 13:00 = 13*60 + 0 = 780 phút  
-    # 14:00 = 14*60 + 0 = 840 phút
 
-    if 750 <= current_minutes < 780:  # 12:30 - 13:00
+    if 750 <= current_minutes < 780:
         return "Đã điểm danh"
-    elif 780 <= current_minutes < 840:  # 13:00 - 14:00
+    elif 780 <= current_minutes < 840: 
         return "Trễ"
     else:
         return "Vắng"
@@ -771,12 +700,10 @@ def log_attendance_csv(mssv, name):
     now = datetime.now()
     date_str = now.strftime("%Y-%m-%d")
     filename = f"attendance_{date_str}.csv"
-    
-    # Xác định trạng thái dựa trên thời gian
+
     status = get_attendance_status(now)
     time_str = now.strftime("%H:%M:%S")
-    
-    # Check trùng lặp
+
     already_checked = False
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
@@ -786,23 +713,19 @@ def log_attendance_csv(mssv, name):
     if not already_checked:
         with open(filename, 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            # Nếu file mới thì ghi header
             if os.stat(filename).st_size == 0:
                 writer.writerow(["MSSV", "HoTen", "ThoiGian", "TrangThai"])
             writer.writerow([mssv, name, time_str, status])
         
         print(f"📝 Điểm danh: {mssv} - {name} - {time_str} - [{status}]")
-        return True, status  # Ghi mới
-    return False, None  # Đã có rồi
+        return True, status
+    return False, None 
 
-# --- 5. API XỬ LÝ AI (CORE LOGIC) ---
 @app.route('/api/process_frame', methods=['POST'])
 def process_frame():
-    # Kiểm tra thời gian trước khi xử lý
     now = datetime.now()
     current_minutes = now.hour * 60 + now.minute
-    
-    # Nếu chưa tới 12:30 (750 phút), từ chối điểm danh
+
     if current_minutes < 750:
         return jsonify({
             "status": "too_early",
@@ -810,71 +733,58 @@ def process_frame():
             "instruction": "too_early",
             "current_time": now.strftime("%H:%M")
         })
-    
-    # Lấy IP client để quản lý session
+
     client_ip = request.remote_addr
     if client_ip not in client_states:
         client_states[client_ip] = ClientState()
     
     state = client_states[client_ip]
-    # Reset nếu user không tương tác quá 30s
     if time.time() - state.last_active > 30:
         state.reset()
     state.last_active = time.time()
 
     try:
-        # 1. Decode Ảnh Base64
         data = request.json['image']
         header, encoded = data.split(",", 1)
         nparr = np.frombuffer(base64.b64decode(encoded), np.uint8)
         frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         
         print(f"📸 Nhận frame: {frame.shape if frame is not None else 'NULL'} - Client: {client_ip} - Step: {state.step}")
-        
-        # 2. Detect Face
+
         faces, boxes = detector.detect_from_frame(frame)
         
         if not faces or len(faces) == 0:
-            if state.step == "liveness": # Đang quay đầu mà mất mặt -> làm lại
+            if state.step == "liveness": 
                 state.reset()
             print(f"⚠️ Không phát hiện khuôn mặt - Client: {client_ip}")
             return jsonify({"status": "waiting", "message": "Không thấy khuôn mặt. Hãy nhìn vào camera!", "instruction": "none"})
 
-        # Lấy khuôn mặt to nhất
         face_img = faces[0]
         print(f"✅ Phát hiện {len(faces)} khuôn mặt - Client: {client_ip} - Step: {state.step}")
 
-        # 3. QUY TRÌNH: CHECK LIVENESS -> RECOGNIZE
-        
-        # Giai đoạn A: Kiểm tra Liveness (Quay trái)
         if state.step == "detect" or state.step == "liveness":
             current_yaw, has_face = calculate_yaw_from_frame(frame)
             
             if state.step == "detect":
-                # Bắt đầu ghi nhận góc ban đầu
                 state.initial_yaw = current_yaw
                 state.start_time = time.time()
                 state.step = "liveness"
                 return jsonify({
                     "status": "liveness", 
                     "message": "Đã bắt khuôn mặt", 
-                    "instruction": "turn_left" # Frontend hiện mũi tên trái
+                    "instruction": "turn_left"
                 })
             
             elif state.step == "liveness":
-                # Tính độ lệch góc
                 deviation = abs(state.initial_yaw - current_yaw)
                 YAW_THRESHOLD = 25.0
-                
-                # Check Timeout (10s)
+
                 if time.time() - state.start_time > 10:
                     state.reset()
                     return jsonify({"status": "error", "message": "Hết giờ! Vui lòng thử lại.", "instruction": "retry"})
 
                 if deviation > YAW_THRESHOLD:
-                    # ✅ Liveness Passed
                     state.step = "recognizing"
-                    # Không return vội, cho chạy xuống dưới để recognize luôn
                 else:
                     progress = int((deviation / YAW_THRESHOLD) * 100)
                     return jsonify({
@@ -883,12 +793,10 @@ def process_frame():
                         "instruction": "turn_left"
                     })
 
-        # Giai đoạn B: Nhận diện (Khi đã pass liveness)
         if state.step == "recognizing":
             if knn is None:
                 return jsonify({"status": "error", "message": "Lỗi Model Server"})
-            
-            # Embed & Predict
+
             emb = embedder.embed_face(face_img).reshape(1, -1)
             dist = knn.kneighbors(emb, n_neighbors=1)[0][0][0]
             pred = knn.predict(emb)[0]
@@ -947,16 +855,12 @@ def export_attendance():
         
         if not students:
             return jsonify({"success": False, "message": "Không có dữ liệu để xuất"}), 400
-        
-        # Tạo tên file với timestamp
+
         now = datetime.now()
         filename = f"DanhSachDiemDanh_{now.strftime('%Y%m%d_%H%M%S')}.csv"
-        filepath = os.path.join(BASE_DIR, 'exports', filename)
-        
-        # Tạo thư mục exports nếu chưa có
+
         os.makedirs(os.path.join(BASE_DIR, 'exports'), exist_ok=True)
-        
-        # Ghi file CSV với encoding UTF-8 BOM để Excel hiển thị đúng tiếng Việt
+
         with open(filepath, 'w', newline='', encoding='utf-8-sig') as csvfile:
             fieldnames = ['STT', 'MSSV', 'Họ và tên', 'Giới tính', 'Thời gian điểm danh']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -970,8 +874,7 @@ def export_attendance():
                     'Giới tính': student.get('gender', ''),
                     'Thời gian điểm danh': student.get('time', '')
                 })
-        
-        # Gửi file về client
+
         return send_file(filepath, 
                         as_attachment=True, 
                         download_name=filename,
@@ -985,19 +888,16 @@ def export_attendance():
 def generate_full_report():
     """API tạo báo cáo đầy đủ với trạng thái tự động cho tất cả sinh viên"""
     try:
-        # Load danh sách sinh viên từ student_list.json
         student_list_path = os.path.join(BASE_DIR, 'student_list.json')
         if not os.path.exists(student_list_path):
             return jsonify({"success": False, "message": "Không tìm thấy student_list.json"}), 404
         
         with open(student_list_path, 'r', encoding='utf-8') as f:
             all_students = json.load(f)
-        
-        # Load dữ liệu điểm danh hôm nay
+
         date_str = datetime.now().strftime("%Y-%m-%d")
         attendance_file = f"attendance_{date_str}.csv"
-        
-        # Dictionary để lưu thông tin điểm danh
+
         attendance_dict = {}
         
         if os.path.exists(attendance_file):
@@ -1009,16 +909,13 @@ def generate_full_report():
                         'time': row.get('ThoiGian', ''),
                         'status': row.get('TrangThai', 'Vắng')
                     }
-        
-        # Tạo báo cáo đầy đủ
+
         now = datetime.now()
         filename = f"BaoCaoDiemDanh_DayDu_{now.strftime('%Y%m%d_%H%M%S')}.csv"
         filepath = os.path.join(BASE_DIR, 'exports', filename)
-        
-        # Tạo thư mục exports nếu chưa có
+
         os.makedirs(os.path.join(BASE_DIR, 'exports'), exist_ok=True)
-        
-        # Ghi file CSV
+
         with open(filepath, 'w', newline='', encoding='utf-8-sig') as csvfile:
             fieldnames = ['STT', 'MSSV', 'Họ và tên', 'Giới tính', 'Thời gian điểm danh', 'Trạng thái']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -1036,16 +933,14 @@ def generate_full_report():
                     'Thời gian điểm danh': attendance_info['time'],
                     'Trạng thái': attendance_info['status']
                 })
-        
-        # Thống kê
+
         total = len(all_students)
         attended = sum(1 for info in attendance_dict.values() if info['status'] == 'Đã điểm danh')
         late = sum(1 for info in attendance_dict.values() if info['status'] == 'Trễ')
         absent = total - attended - late
         
         print(f"📊 Báo cáo: Tổng {total} | Có mặt {attended} | Trễ {late} | Vắng {absent}")
-        
-        # Gửi file về client
+
         return send_file(filepath, 
                         as_attachment=True, 
                         download_name=filename,
